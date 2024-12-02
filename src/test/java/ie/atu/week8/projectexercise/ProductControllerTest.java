@@ -42,8 +42,6 @@ class ProductControllerTest {
         mockmvc.perform(get("/products/1"))
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$.name").value("Kettle"));
-
-
     }
 
     @Test
@@ -62,10 +60,19 @@ class ProductControllerTest {
     }
 
     @Test
-    void testUpdateProduct() {
+    void testUpdateProduct() throws Exception {
+        Product updatedProduct = new Product(1L, "Kettle", "Boils", 35);
+        when(productService.saveProduct(any(Product.class))).thenReturn(updatedProduct);
+
+        ObjectMapper om = new ObjectMapper();
+        String valueJson = om.writeValueAsString(updatedProduct);
+
+        mockmvc.perform(put("/products/1").contentType("application/json").content(valueJson))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.name").value("Kettle"));
     }
 
     @Test
-    void deleteProduct() {
+    void testDeleteProduct() {
     }
 }
